@@ -28,10 +28,6 @@
             color: #012169;
         }
 
-        .bg-duke {
-            background-color: #012169;
-        }
-
         .card {
             background: white;
             border-radius: 12px;
@@ -53,21 +49,120 @@
             flex-shrink: 0;
         }
 
-        /* This is the hidden card we will screenshot */
+        /* --- MINIMALIST INSTAGRAM CARD --- */
         #insta-card {
             width: 1080px;
             height: 1920px;
             position: absolute;
             left: -9999px;
-            /* Hide it off-screen */
             top: 0;
-            background: linear-gradient(180deg, #012169 0%, #00539B 100%);
+            background-color: #012169;
+            /* Solid Duke Blue */
             color: white;
-            padding: 80px;
+            padding: 120px 100px;
             display: flex;
             flex-direction: column;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .minimal-header {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            /* Fixes clipping */
+        }
+
+        .minimal-sub {
+            font-family: 'Courier New', Courier, monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.6;
+            font-size: 1.2rem;
+            margin-bottom: 6rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 2rem;
+        }
+
+        .stat-block {
+            display: flex;
             justify-content: space-between;
-            font-family: sans-serif;
+            align-items: baseline;
+            margin-bottom: 6rem;
+        }
+
+        .stat-value {
+            font-size: 6rem;
+            font-weight: 300;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            /* Increased to prevent cut-off */
+            padding-bottom: 10px;
+            /* Buffer for descenders */
+        }
+
+        .stat-label {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            opacity: 0.6;
+            text-transform: uppercase;
+        }
+
+        .list-section {
+            margin-bottom: 5rem;
+        }
+
+        .list-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .minimal-item {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .minimal-rank {
+            font-family: 'Courier New', monospace;
+            opacity: 0.4;
+            margin-right: 1.5rem;
+            font-size: 1.5rem;
+            width: 40px;
+        }
+
+        .minimal-name {
+            font-weight: 500;
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 1rem;
+            line-height: 1.4;
+            /* Increased line-height fixes clipping */
+            padding-bottom: 4px;
+        }
+
+        .minimal-count {
+            opacity: 0.5;
+            font-size: 1.5rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .minimal-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0.4;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 2rem;
         }
     </style>
 </head>
@@ -81,29 +176,17 @@
         </div>
 
         <div id="instructions" class="bg-white p-6 rounded-xl shadow-sm mb-8 border-l-4 border-blue-900">
-            <h3 class="font-bold text-lg mb-4 text-gray-700">How to get your data (Mac/PC Outlook App):</h3>
+            <h3 class="font-bold text-lg mb-4 text-gray-700">How to get your data:</h3>
             <ul class="space-y-3 text-sm text-gray-600">
-                <li class="flex items-start">
-                    <span class="step-number">1</span>
-                    <span class="mt-0.5">Open the <b>Outlook Desktop App</b>.</span>
+                <li class="flex items-start"><span class="step-number">1</span><span class="mt-0.5">Open <b>Outlook
+                            Desktop (Mac)</b>.</span></li>
+                <li class="flex items-start"><span class="step-number">2</span><span class="mt-0.5">Search: <code
+                            class="bg-gray-100 px-2 py-1 rounded text-blue-800 font-mono select-all">from:mobileorder@transactcampus.com received:>08/09/2025</code></span>
                 </li>
-                <li class="flex items-start">
-                    <span class="step-number">2</span>
-                    <span class="mt-0.5">Copy/Paste this search:
-                        <br>
-                        <code
-                            class="bg-gray-100 px-2 py-1 mt-2 inline-block rounded text-blue-800 font-mono select-all">from:mobileorder@transactcampus.com received:>08/09/2025</code>
-                    </span>
-                </li>
-                <li class="flex items-start">
-                    <span class="step-number">3</span>
-                    <span class="mt-0.5"><b>Select All</b> (Cmd+A) and Drag to Desktop to get <code
-                            class="text-xs border border-gray-300 px-1 rounded">.eml</code> files.</span>
-                </li>
-                <li class="flex items-start">
-                    <span class="step-number">4</span>
-                    <span class="mt-0.5">Drop them below.</span>
-                </li>
+                <li class="flex items-start"><span class="step-number">3</span><span class="mt-0.5"><b>Select All</b>
+                        (Cmd+A) -> Drag to Desktop (.eml files).</span></li>
+                <li class="flex items-start"><span class="step-number">4</span><span class="mt-0.5">Drop them
+                        below.</span></li>
             </ul>
         </div>
 
@@ -115,7 +198,6 @@
         </div>
 
         <div id="results" class="hidden mt-10 space-y-8">
-
             <div class="text-center">
                 <button onclick="downloadStory()"
                     class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center mx-auto gap-2">
@@ -154,55 +236,59 @@
                 </div>
             </div>
 
-            <div class="mt-4 text-center">
-                <button onclick="location.reload()" class="text-sm text-blue-600 font-semibold hover:underline">Start
-                    Over</button>
-            </div>
+            <div class="mt-4 text-center"><button onclick="location.reload()"
+                    class="text-sm text-blue-600 font-semibold hover:underline">Start Over</button></div>
         </div>
     </div>
 
-    <footer class="text-center py-6 text-gray-400 text-sm">
-        Built by <a href="https://github.com/jamesmu03" class="text-blue-600 hover:underline">James Mu</a>
-    </footer>
+    <footer class="text-center py-6 text-gray-400 text-sm">Built by <a href="https://github.com/jamesmu03"
+            class="text-blue-600 hover:underline">James Mu</a></footer>
 
     <div id="insta-card">
         <div>
-            <h1 class="text-8xl font-black mb-4">DUKE<br>FOOD<br>WRAPPED</h1>
-            <p class="text-4xl opacity-80 font-mono">FALL 2025</p>
-        </div>
+            <h1 class="minimal-header">Duke Food Wrapped</h1>
+            <p class="minimal-sub">FALL 2025 RECAP</p>
 
-        <div class="space-y-12">
-            <div>
-                <p class="text-3xl font-bold uppercase opacity-70 mb-2">Total Spent</p>
-                <p id="story-spent" class="text-9xl font-black text-white">$0</p>
+            <div class="stat-block">
+                <div>
+                    <span class="stat-value" id="story-spent">$0</span>
+                </div>
+                <span class="stat-label">Total Spent</span>
             </div>
 
-            <div>
-                <p class="text-3xl font-bold uppercase opacity-70 mb-4">Top Restaurant</p>
-                <p id="story-spot" class="text-7xl font-bold text-yellow-400">McDonald's</p>
-            </div>
-
-            <div>
-                <p class="text-3xl font-bold uppercase opacity-70 mb-6">Top 3 Cravings</p>
-                <ul id="story-items" class="text-4xl font-semibold space-y-4">
-                </ul>
+            <div class="stat-block" style="margin-top: -3rem; margin-bottom: 5rem;">
+                <div>
+                    <span class="stat-value" id="story-orders">0</span>
+                </div>
+                <span class="stat-label">Total Orders</span>
             </div>
         </div>
 
-        <div class="text-center border-t border-white/30 pt-8">
-            <p class="text-2xl font-mono opacity-60">built by james mu</p>
+        <div>
+            <div class="list-section">
+                <p class="list-title">Top Restaurants</p>
+                <div id="story-restaurants-list"></div>
+            </div>
+
+            <div class="list-section">
+                <p class="list-title">Top Orders</p>
+                <div id="story-items-list"></div>
+            </div>
+        </div>
+
+        <div class="minimal-footer">
+            <span>built by James Mu</span>
+            <span>github.com/jamesmu03</span>
         </div>
     </div>
 
     <script>
-        // --- LOGIC ---
         const FILTER_DATE = new Date("2025-08-09");
         const dropZone = document.getElementById('drop-zone');
         const resultsDiv = document.getElementById('results');
 
         let globalStats = { spent: 0, count: 0, restaurants: {}, items: {} };
 
-        // Drag & Drop
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
         dropZone.addEventListener('drop', async (e) => {
@@ -216,7 +302,6 @@
             displayResults();
         });
 
-        // Email Parsing
         function decodeQuotedPrintable(str) {
             return str.replace(/=[\r\n]+/g, "").replace(/=([0-9A-F]{2})/gi, (m, p1) => String.fromCharCode(parseInt(p1, 16)));
         }
@@ -232,14 +317,29 @@
 
             const parts = rawText.split('Content-Type: text/html');
             if (parts.length < 2) return;
-
             let htmlContent = parts[1];
             const boundaryMatch = rawText.match(/boundary="?([^"\s]+)"?/);
             if (boundaryMatch) htmlContent = htmlContent.split("--" + boundaryMatch[1])[0];
 
             const doc = new DOMParser().parseFromString(decodeQuotedPrintable(htmlContent), "text/html");
 
-            // Price
+            let currentReceiptRestaurant = "Unknown";
+            const allTds = Array.from(doc.querySelectorAll('td'));
+
+            for (let i = 0; i < allTds.length; i++) {
+                if (allTds[i].textContent.includes("Target:")) {
+                    const nextRow = allTds[i].closest('tr')?.nextElementSibling;
+                    if (nextRow) {
+                        let name = nextRow.textContent.trim().replace(/Duke University/g, "").replace(/Science Drive/g, "").trim();
+                        if (name.length > 2) {
+                            currentReceiptRestaurant = name;
+                            globalStats.restaurants[name] = (globalStats.restaurants[name] || 0) + 1;
+                        }
+                    }
+                    break;
+                }
+            }
+
             let orderTotal = 0;
             const priceMatches = doc.body.textContent.match(/\$\s?(\d+\.\d{2})/g);
             if (priceMatches) orderTotal = Math.max(...priceMatches.map(p => parseFloat(p.replace(/[^0-9.]/g, ''))));
@@ -249,32 +349,22 @@
                 globalStats.count++;
             }
 
-            // Restaurant
-            const allTds = Array.from(doc.querySelectorAll('td'));
-            for (let i = 0; i < allTds.length; i++) {
-                if (allTds[i].textContent.includes("Target:")) {
-                    const nextRow = allTds[i].closest('tr')?.nextElementSibling;
-                    if (nextRow) {
-                        let name = nextRow.textContent.trim().replace(/Duke University/g, "").replace(/Science Drive/g, "").trim();
-                        if (name.length > 2) globalStats.restaurants[name] = (globalStats.restaurants[name] || 0) + 1;
-                    }
-                    break;
-                }
-            }
-
-            // Items
             for (let i = 0; i < allTds.length; i++) {
                 const text = allTds[i].textContent.trim();
                 if (text.match(/^\d+\.\s+/)) {
                     let name = text.replace(/^\d+\.\s+/, "").split("$")[0].trim();
-                    if (!["subtotal", "tax", "total", "dukecard"].some(n => name.toLowerCase().includes(n)) && name.length > 2) {
-                        globalStats.items[name] = (globalStats.items[name] || 0) + 1;
+                    const noise = ["subtotal", "tax", "total", "dukecard"];
+                    if (!noise.some(n => name.toLowerCase().includes(n)) && name.length > 2) {
+                        let fullName = name;
+                        if (currentReceiptRestaurant !== "Unknown") {
+                            fullName = `${name} (${currentReceiptRestaurant})`;
+                        }
+                        globalStats.items[fullName] = (globalStats.items[fullName] || 0) + 1;
                     }
                 }
             }
         }
 
-        // Display
         function displayResults() {
             dropZone.style.display = 'none';
             document.getElementById('instructions').style.display = 'none';
@@ -288,7 +378,6 @@
             const topSpot = sortedRestaurants.length > 0 ? sortedRestaurants[0][0] : "None";
             document.getElementById('top-spot').innerText = topSpot;
 
-            // Update Chart
             new Chart(document.getElementById('restaurantChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
@@ -302,7 +391,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
             });
 
-            // Update Lists
             const sortedItems = Object.entries(globalStats.items).sort((a, b) => b[1] - a[1]);
             const list = document.getElementById('item-list');
             list.innerHTML = "";
@@ -310,22 +398,35 @@
                 list.innerHTML += `<li class="flex justify-between py-2 border-b border-gray-100"><span class="text-sm truncate w-3/4">${i + 1}. ${name}</span><span class="text-xs bg-blue-100 text-blue-800 px-2 rounded-full">${qty}</span></li>`;
             });
 
-            // --- POPULATE HIDDEN INSTAGRAM CARD ---
-            document.getElementById('story-spent').innerText = "$" + Math.round(globalStats.spent).toLocaleString(); // No cents for Story
-            document.getElementById('story-spot').innerText = topSpot;
-            const storyList = document.getElementById('story-items');
-            storyList.innerHTML = "";
-            sortedItems.slice(0, 3).forEach(([name, qty], i) => {
-                storyList.innerHTML += `<li class="flex items-center gap-4"><span class="bg-white/20 px-3 py-1 rounded">#${i + 1}</span> <span>${name}</span></li>`;
+            // --- POPULATE MINIMAL INSTAGRAM CARD ---
+            document.getElementById('story-spent').innerText = "$" + Math.round(globalStats.spent).toLocaleString();
+            document.getElementById('story-orders').innerText = globalStats.count;
+
+            const storyRestList = document.getElementById('story-restaurants-list');
+            storyRestList.innerHTML = "";
+            sortedRestaurants.slice(0, 5).forEach(([name, qty], i) => {
+                storyRestList.innerHTML += `
+                    <div class="minimal-item">
+                        <span class="minimal-rank">0${i + 1}</span>
+                        <span class="minimal-name">${name}</span>
+                        <span class="minimal-count">${qty}</span>
+                    </div>`;
+            });
+
+            const storyItemList = document.getElementById('story-items-list');
+            storyItemList.innerHTML = "";
+            sortedItems.slice(0, 5).forEach(([name, qty], i) => {
+                storyItemList.innerHTML += `
+                    <div class="minimal-item">
+                        <span class="minimal-rank">0${i + 1}</span>
+                        <span class="minimal-name">${name}</span>
+                        <span class="minimal-count">${qty}</span>
+                    </div>`;
             });
         }
 
-        // Export Function
         function downloadStory() {
             const card = document.getElementById('insta-card');
-
-            // html2canvas needs the element to be in the DOM and visible (technically).
-            // Since it's position:absolute left:-9999px, it works fine.
             html2canvas(card, { scale: 1 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'duke-food-wrapped.png';
