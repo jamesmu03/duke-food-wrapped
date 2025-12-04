@@ -45,6 +45,7 @@
             font-size: 14px;
             font-weight: bold;
             margin-right: 8px;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -54,7 +55,7 @@
     <div class="max-w-4xl mx-auto p-6 md:p-12">
         <div class="text-center mb-8">
             <h1 class="text-5xl font-extrabold duke-blue mb-2 tracking-tight">Duke Food Wrapped 😈</h1>
-            <p class="text-gray-500">Your unofficial 2024-2025 dining recap.</p>
+            <p class="text-gray-500">Your unofficial Fall 2025 dining recap.</p>
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-sm mb-8 border-l-4 border-blue-900">
@@ -62,21 +63,24 @@
             <ul class="space-y-3 text-sm text-gray-600">
                 <li class="flex items-start">
                     <span class="step-number">1</span>
-                    <span class="mt-0.5">Open the <b>Outlook Desktop App</b>. (This works best on Mac).</span>
+                    <span class="mt-0.5">Open the <b>Outlook Desktop App</b>. (Works best on Mac).</span>
                 </li>
                 <li class="flex items-start">
                     <span class="step-number">2</span>
-                    <span class="mt-0.5">Search for: <code
-                            class="bg-gray-100 px-2 py-0.5 rounded text-blue-800">from:mobileorder@transactcampus.com</code></span>
+                    <span class="mt-0.5">Copy and paste this exact search command:
+                        <br>
+                        <code
+                            class="bg-gray-100 px-2 py-1 mt-2 inline-block rounded text-blue-800 font-mono select-all">from:mobileorder@transactcampus.com received:>08/09/2025</code>
+                    </span>
                 </li>
                 <li class="flex items-start">
                     <span class="step-number">3</span>
-                    <span class="mt-0.5"><b>Select All</b> emails (Cmd+A or Ctrl+A).</span>
+                    <span class="mt-0.5"><b>Select All</b> emails (Cmd+A).</span>
                 </li>
                 <li class="flex items-start">
                     <span class="step-number">4</span>
-                    <span class="mt-0.5"><b>Drag and Drop</b> the selected emails from Outlook onto your Desktop. They
-                        will become <code class="text-xs border border-gray-300 px-1 rounded">.eml</code> files.</span>
+                    <span class="mt-0.5"><b>Drag and Drop</b> the selected emails to your Desktop (creates .eml
+                        files).</span>
                 </li>
                 <li class="flex items-start">
                     <span class="step-number">5</span>
@@ -87,9 +91,9 @@
 
         <div id="drop-zone"
             class="drop-zone bg-white p-16 rounded-2xl text-center cursor-pointer shadow-sm hover:shadow-md">
-            <div class="text-6xl mb-4">📧</div>
+            <div class="text-6xl mb-4">📅</div>
             <p class="text-xl font-medium text-gray-600">Drop .EML files here</p>
-            <p class="text-sm text-gray-400 mt-2">(We'll ignore any other files)</p>
+            <p class="text-sm text-gray-400 mt-2"><b>Privacy:</b> Processed 100% locally in your browser.</p>
         </div>
 
         <div id="results" class="hidden mt-10 space-y-8">
@@ -101,6 +105,7 @@
                 <div class="card p-6 border-t-4 border-blue-700 text-center">
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Total Orders</p>
                     <p id="total-orders" class="text-4xl font-extrabold duke-blue mt-2">0</p>
+                    <p id="skipped-orders" class="text-xs text-gray-400 mt-1 hidden">0 skipped (too old)</p>
                 </div>
                 <div class="card p-6 border-t-4 border-blue-500 text-center">
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Top Spot</p>
@@ -127,16 +132,18 @@
     </div>
 
     <script>
+        // --- CONFIGURATION ---
+        // We keep this as a failsafe in case they drag old files anyway
+        const FILTER_DATE = new Date("2025-08-09");
+
         const dropZone = document.getElementById('drop-zone');
         const resultsDiv = document.getElementById('results');
 
-        let globalStats = { spent: 0, count: 0, restaurants: {}, items: {} };
+        let globalStats = { spent: 0, count: 0, skipped: 0, restaurants: {}, items: {} };
 
-        // UI: Drag Effects
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
 
-        // UI: Drop Handler
         dropZone.addEventListener('drop', async (e) => {
             e.preventDefault();
             dropZone.classList.remove('dragover');
@@ -150,7 +157,6 @@
 
             dropZone.innerHTML = `<p class="text-blue-600 animate-pulse font-bold">Processing ${files.length} receipts...</p>`;
 
-            // Process all files
             for (let file of files) {
                 await parseEML(file);
             }
@@ -158,18 +164,26 @@
             displayResults();
         });
 
-        // --- DECODER for "Quoted-Printable" Emails ---
         function decodeQuotedPrintable(str) {
             return str
-                .replace(/=[\r\n]+/g, "") // Join split lines
+                .replace(/=[\r\n]+/g, "")
                 .replace(/=([0-9A-F]{2})/gi, (m, p1) => String.fromCharCode(parseInt(p1, 16)));
         }
 
-        // --- MAIN PARSER ---
         async function parseEML(file) {
             const rawText = await file.text();
 
-            // 1. Isolate the HTML part of the email
+            // 1. SAFETY CHECK: DATE HEADER
+            const dateMatch = rawText.match(/^Date:\s*(.+)$/m);
+            if (dateMatch) {
+                const emailDate = new Date(dateMatch[1]);
+                if (!isNaN(emailDate) && emailDate < FILTER_DATE) {
+                    globalStats.skipped++;
+                    return;
+                }
+            }
+
+            // 2. ISOLATE HTML
             const parts = rawText.split('Content-Type: text/html');
             if (parts.length < 2) return;
 
@@ -180,14 +194,12 @@
                 htmlContent = htmlContent.split("--" + boundary)[0];
             }
 
-            // 2. Decode and Parse HTML
+            // 3. PARSE HTML
             const cleanHTML = decodeQuotedPrintable(htmlContent);
             const parser = new DOMParser();
             const doc = parser.parseFromString(cleanHTML, "text/html");
 
-            // 3. Extract Data using DOM
-
-            // A. PRICE (Max dollar amount in the email)
+            // A. PRICE
             let orderTotal = 0;
             const allText = doc.body.textContent;
             const priceMatches = allText.match(/\$\s?(\d+\.\d{2})/g);
@@ -201,16 +213,14 @@
                 globalStats.count++;
             }
 
-            // B. RESTAURANT (Find "Target:" -> Next Row)
+            // B. RESTAURANT
             const allTds = Array.from(doc.querySelectorAll('td'));
             for (let i = 0; i < allTds.length; i++) {
                 if (allTds[i].textContent.includes("Target:")) {
                     const parentRow = allTds[i].closest('tr');
                     const nextRow = parentRow ? parentRow.nextElementSibling : null;
-
                     if (nextRow) {
                         let restaurantName = nextRow.textContent.trim();
-                        // Clean noise
                         restaurantName = restaurantName.replace(/Duke University/g, "").replace(/Science Drive/g, "").trim();
                         if (restaurantName && restaurantName.length > 2) {
                             globalStats.restaurants[restaurantName] = (globalStats.restaurants[restaurantName] || 0) + 1;
@@ -220,14 +230,12 @@
                 }
             }
 
-            // C. ITEMS (Find "1. Item Name")
+            // C. ITEMS
             for (let i = 0; i < allTds.length; i++) {
                 const text = allTds[i].textContent.trim();
                 if (text.match(/^\d+\.\s+/)) {
                     let itemName = text.replace(/^\d+\.\s+/, "");
                     itemName = itemName.split("$")[0].trim();
-
-                    // Filter noise
                     const noise = ["subtotal", "tax", "total", "dukecard"];
                     if (!noise.some(n => itemName.toLowerCase().includes(n)) && itemName.length > 2) {
                         globalStats.items[itemName] = (globalStats.items[itemName] || 0) + 1;
@@ -240,14 +248,19 @@
             dropZone.style.display = 'none';
             resultsDiv.classList.remove('hidden');
 
-            // Update Text Stats
             document.getElementById('total-spent').innerText = "$" + globalStats.spent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             document.getElementById('total-orders').innerText = globalStats.count;
+
+            if (globalStats.skipped > 0) {
+                const skipEl = document.getElementById('skipped-orders');
+                skipEl.innerText = `${globalStats.skipped} skipped (before Aug 9)`;
+                skipEl.classList.remove('hidden');
+            }
 
             const sortedRestaurants = Object.entries(globalStats.restaurants).sort((a, b) => b[1] - a[1]);
             if (sortedRestaurants.length > 0) document.getElementById('top-spot').innerText = sortedRestaurants[0][0];
 
-            // Render Chart
+            // Chart
             const ctx = document.getElementById('restaurantChart').getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
@@ -262,7 +275,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
             });
 
-            // Render List
+            // List
             const sortedItems = Object.entries(globalStats.items).sort((a, b) => b[1] - a[1]);
             const list = document.getElementById('item-list');
             list.innerHTML = "";
